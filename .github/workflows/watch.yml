@@ -1,0 +1,22 @@
+name: 해운대CC 예약 감시
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # 5분마다 (GitHub 사정에 따라 늦어질 수 있음)
+  workflow_dispatch:        # Actions 화면에서 "Run workflow" 로 바로 실행
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: 예약 확인
+        shell: pwsh
+        env:
+          HDCC_ID: ${{ secrets.HDCC_ID }}
+          HDCC_PW: ${{ secrets.HDCC_PW }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          TARGET_DATE: ${{ vars.TARGET_DATE }}
+          HDCC_LOGIN_TYPE: ${{ vars.HDCC_LOGIN_TYPE || '0' }}
+        run: ./watch_once.ps1
